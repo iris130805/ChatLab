@@ -17,21 +17,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          # 這裡刪除了 cache: 'npm'，避免找不到 lock 文件的錯誤
 
       - name: Install Dependencies
         run: |
           npm install --legacy-peer-deps
 
-      - name: Build
+      - name: Build Web Version
         run: |
-          # 增加 base 路徑設定，確保在 GitHub Pages 上能正確讀取圖片和腳本
-          npm run build -- --base=/ChatLab/
+          # 我們不使用 npm run build (因為那會跑 electron-vite)
+          # 我們直接呼叫 vite 來編譯渲染層的網頁
+          npx vite build --base=/ChatLab/
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: './dist' # vite build 預設輸出的資料夾
 
   deploy:
     needs: build_site
