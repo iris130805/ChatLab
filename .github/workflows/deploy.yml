@@ -12,19 +12,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
+          # 這裡刪除了 cache: 'npm'，避免找不到 lock 文件的錯誤
+
+      - name: Install Dependencies
+        run: |
+          npm install --legacy-peer-deps
+
       - name: Build
-        run: npm run build
+        run: |
+          # 增加 base 路徑設定，確保在 GitHub Pages 上能正確讀取圖片和腳本
+          npm run build -- --base=/ChatLab/
+
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
           path: './dist'
+
   deploy:
     needs: build_site
     runs-on: ubuntu-latest
